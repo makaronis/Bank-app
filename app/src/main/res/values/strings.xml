@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">bank-app</string>
+    <string name="main">Home</string>
 </resources>
