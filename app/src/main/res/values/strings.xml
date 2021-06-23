@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">bank-app</string>
     <string name="main">Home</string>
+    <string name="gbpSymbol" translatable="false">£</string>
+    <string name="eurSymbol" translatable="false">€</string>
+    <string name="rubSymbol" translatable="false">₽</string>
+    <string name="gbp" translatable="false">GBP</string>
+    <string name="eur" translatable="false">EUR</string>
+    <string name="rub" translatable="false">RUB</string>
 </resources>

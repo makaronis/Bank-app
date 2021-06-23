@@ -20,7 +20,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         lifecycleScope.launch {
             fragmentBinding.apply {
-                userCard.visibility = View.GONE
+                userCard.visibility = View.INVISIBLE
                 cardPLaceholder.startShimmer()
                 delay(5_000)
                 cardPLaceholder.stopShimmer()

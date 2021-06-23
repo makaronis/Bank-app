@@ -11,4 +11,5 @@
     <color name="secondaryText">#8C9AAE</color>
     <color name="surfaceWhite">#F1F3F9</color>
     <color name="shimmerBackground">#dddddd</color>
+    <color name="transactionStrokeColor">#eaeef9</color>
 </resources>
