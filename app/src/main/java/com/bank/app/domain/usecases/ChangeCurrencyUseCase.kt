@@ -1,4 +1,12 @@
-package com.makaroni.bankapp.domain.usecases
+package com.bank.app.domain.usecases
 
-class ChangeCurrencyUseCase {
+import com.bank.app.data.db.AppSharedPref
+import javax.inject.Inject
+
+class ChangeCurrencyUseCase @Inject constructor(
+    val sharedPref: AppSharedPref,
+) {
+    operator fun invoke(newCurrency: String) {
+
+    }
 }

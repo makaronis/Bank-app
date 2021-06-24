@@ -7,4 +7,6 @@
     <string name="gbp" translatable="false">GBP</string>
     <string name="eur" translatable="false">EUR</string>
     <string name="rub" translatable="false">RUB</string>
+
+    <string name="error_no_internet">No internet access,please check your connection.</string>
 </resources>
