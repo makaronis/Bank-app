@@ -21,11 +21,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         lifecycleScope.launch {
             fragmentBinding.apply {
                 userCard.visibility = View.INVISIBLE
+                cvTransactions.visibility = View.INVISIBLE
                 cardPLaceholder.startShimmer()
+                transactionsPlaceholder.startShimmer()
                 delay(5_000)
                 cardPLaceholder.stopShimmer()
+                transactionsPlaceholder.stopShimmer()
                 cardPLaceholder.visibility = View.GONE
+                transactionsPlaceholder.visibility = View.GONE
                 userCard.visibility = View.VISIBLE
+                cvTransactions.visibility = View.VISIBLE
             }
 
         }

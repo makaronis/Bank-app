@@ -11,24 +11,19 @@
         android:layout_width="44dp"
         android:layout_height="44dp"
         android:layout_marginStart="22dp"
+
+        app:cardBackgroundColor="@color/shimmerBackground"
         android:layout_marginTop="11dp"
         android:layout_marginBottom="11dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:strokeColor="@color/transactionStrokeColor"
-        app:strokeWidth="1dp">
+       >
 
-        <ImageView
-            android:id="@+id/ivIcon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp"
-            android:src="@drawable/ic_netflix_example" />
     </com.google.android.material.card.MaterialCardView>
 
     <TextView
-        android:id="@+id/tvName"
+        android:id="@+id/Name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="17dp"
@@ -38,17 +33,41 @@
         app:layout_constraintStart_toEndOf="@+id/materialCardView"
         app:layout_constraintTop_toTopOf="@+id/materialCardView" />
 
-    <TextView
-        android:id="@+id/tvDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="15/12/2019"
-        android:textSize="11sp"
-        app:layout_constraintStart_toStartOf="@+id/tvName"
-        app:layout_constraintTop_toBottomOf="@+id/tvName" />
+    <View
+        android:id="@+id/view2"
+        android:layout_width="55dp"
+        android:layout_height="0dp"
+        android:background="@color/shimmerBackground"
+        android:layout_marginStart="17dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/materialCardView"
+        app:layout_constraintStart_toEndOf="@+id/materialCardView"
+        app:layout_constraintTop_toTopOf="@+id/materialCardView" />
+
+    <View
+        android:id="@+id/view3"
+        android:background="@color/shimmerBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="22dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ConvertedPrice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/ConvertedPrice"
+        app:layout_constraintTop_toTopOf="@+id/ConvertedPrice" />
 
     <TextView
-        android:id="@+id/tvConvertedPrice"
+        android:id="@+id/Date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:text="15/12/2019"
+        android:textSize="11sp"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="@+id/Name"
+        app:layout_constraintTop_toBottomOf="@+id/Name" />
+
+    <TextView
+        android:id="@+id/ConvertedPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
@@ -56,13 +75,14 @@
         android:text="- £ 7.99"
         android:textColor="@color/primaryText"
         android:textSize="22sp"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/tvDate"
+        app:layout_constraintStart_toEndOf="@+id/Date"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvUsdPrice"
+        android:id="@+id/UsdPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="22dp"
@@ -70,8 +90,20 @@
         android:text="$ 9.85"
         android:textColor="@color/secondaryText"
         android:textSize="14sp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvConvertedPrice" />
+        app:layout_constraintTop_toBottomOf="@+id/ConvertedPrice" />
+
+    <View
+        android:id="@+id/view4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="1dp"
+        android:background="@color/shimmerBackground"
+        app:layout_constraintBottom_toBottomOf="@+id/UsdPrice"
+        app:layout_constraintEnd_toEndOf="@+id/UsdPrice"
+        app:layout_constraintStart_toStartOf="@+id/UsdPrice"
+        app:layout_constraintTop_toTopOf="@+id/UsdPrice" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
