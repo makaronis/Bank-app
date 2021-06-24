@@ -2,6 +2,7 @@ package com.bank.app.presentation
 
 import android.os.Bundle
 import android.view.View
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -34,5 +35,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
 
         }
+    }
+
+    private fun onCurrencyCardClick(card: CardView) {
+
     }
 }
