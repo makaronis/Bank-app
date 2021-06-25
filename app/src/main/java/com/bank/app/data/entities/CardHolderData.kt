@@ -9,5 +9,5 @@ data class CardholderData(
     val cardholderName: String,
     val valid: String,
     val balance: Double,
-    val convertedSum: Double,
+    val convertedBalance: Double,
 )

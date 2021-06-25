@@ -3,6 +3,7 @@ package com.bank.app.data.db
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.bank.app.utils.AppConfig
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,8 +19,9 @@ class AppSharedPref @Inject constructor(@ApplicationContext context: Context) {
         }
     }
 
-    fun getLastCurrencyCode(): String? {
-        return sf.getString(SELECTED_CURRENCY_KEY, null)
+    fun getLastCurrencyCode(): String {
+        return sf.getString(SELECTED_CURRENCY_KEY, AppConfig.DEFAULT_CURRENCY)
+            ?: AppConfig.DEFAULT_CURRENCY
     }
 
     fun setLastUserCard(card: String) {

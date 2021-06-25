@@ -16,8 +16,5 @@ object CurrencyProcessor {
         val baseValue = currencies[baseCurrencyKey] ?: return 0.0
         val recountValue = currencies[recountKey] ?: return 0.0
         return recountValue.value * nominal / baseValue.value
-
     }
-
-
 }
