@@ -13,7 +13,7 @@ data class CardholderInfo(
     val valid: String,
     val balance: Double,
     @SerialName("transaction_history")
-    val transactionHistory: List<Transaction>
+    val transactionHistory: List<Transaction>,
 )
 
 @Serializable

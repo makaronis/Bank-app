@@ -1,4 +1,14 @@
-package com.makaroni.bankapp.data.repository
+package com.bank.app.data.repository
 
-class CardHoldersRepoImpl {
+import com.bank.app.data.api.TransactionsService
+import com.bank.app.data.entities.CardholderInfo
+import javax.inject.Inject
+
+class CardHoldersRepoImpl @Inject constructor(
+    private val apiService: TransactionsService,
+) {
+
+    suspend fun getCardHoldersInfo(): List<CardholderInfo> {
+        return apiService.getTransactions()
+    }
 }

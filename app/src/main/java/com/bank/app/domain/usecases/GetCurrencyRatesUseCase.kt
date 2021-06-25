@@ -15,7 +15,7 @@ class GetCurrencyRatesUseCase @Inject constructor(
             val response = repo.getCurrencies()
             UiState.Success(response)
         } catch (e: Exception) {
-            UiState.Error(msg = R.string.error_no_internet)
+            UiState.Error(msgId = R.string.error_no_internet)
         }
     }
 }
