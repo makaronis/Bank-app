@@ -1,7 +1,8 @@
 package com.bank.app.domain.usecases
 
+import android.util.Log
 import com.bank.app.data.entities.CardholderData
-import com.bank.app.data.entities.State
+import com.bank.app.data.entities.Currency
 import com.bank.app.data.entities.TransactionData
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -13,24 +14,30 @@ class GetDataUseCase @Inject constructor(
     private val convertUserCurrency: ConvertUserCurrencyUseCase,
 ) {
 
-    suspend operator fun invoke(): Map<CardholderData, List<TransactionData>>? {
+    suspend operator fun invoke(): Result<Pair<Map<CardholderData, List<TransactionData>>, Map<String, Currency>>> {
         return coroutineScope {
-            try {
-                val cardHolderInfo = async { getCardHolderInfo() }
-                val currencyRates = async { getCurrencyRates() }
-                val cardHolders = when (val cardResult = cardHolderInfo.await()) {
-                    is State.Success -> cardResult.data
-                    is State.Error -> null
+            val cardHolderInfo = async { getCardHolderInfo() }
+            val currencyRates = async { getCurrencyRates() }
+
+            val cardResult = cardHolderInfo.await()
+            val cardHolders = cardResult.fold(
+                onSuccess = {
+                    it
+                }, onFailure = {
+                    return@coroutineScope Result.failure(it)
+                })
+
+            val currencyResult = currencyRates.await()
+            val currencies = currencyResult.fold(
+                onSuccess = {
+                    it
+                },
+                onFailure = {
+                    return@coroutineScope Result.failure(it)
                 }
-                val currencies = when (val currencyResult = currencyRates.await()) {
-                    is State.Success -> currencyResult.data
-                    is State.Error -> null
-                }
-                if (cardHolders == null || currencies == null) return@coroutineScope null
-                convertUserCurrency(cardHolders,currencies)
-            } catch (e: Exception) {
-                null
-            }
+            )
+
+            Result.success(convertUserCurrency(cardHolders, currencies) to currencies)
         }
     }
 }

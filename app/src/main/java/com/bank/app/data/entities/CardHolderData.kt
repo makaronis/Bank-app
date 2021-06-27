@@ -10,4 +10,5 @@ data class CardholderData(
     val valid: String,
     val balance: Double,
     val convertedBalance: Double,
+    val convertedCode: String,
 )

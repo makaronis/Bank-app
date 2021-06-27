@@ -3,66 +3,89 @@ package com.bank.app.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bank.app.data.entities.*
-import com.bank.app.domain.usecases.ConvertUserCurrencyUseCase
-import com.bank.app.domain.usecases.GetCurrencyRatesUseCase
-import com.bank.app.domain.usecases.GetCardHolderInfoUseCase
+import com.bank.app.domain.usecases.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(
-    val getCurrencyRates: GetCurrencyRatesUseCase,
-    val getCardHolderInfo: GetCardHolderInfoUseCase,
-    val convertUserCurrencyUseCase: ConvertUserCurrencyUseCase,
+    val getData: GetDataUseCase,
+    val changeCurrency: ChangeCurrencyUseCase,
+    val getCardHolders: GetCardHolderInfoUseCase,
 ) : ViewModel() {
 
-    private val _currencies = MutableStateFlow<Map<String, Currency>>(emptyMap())
-    val currencies: StateFlow<Map<String, Currency>>
-        get() = _currencies
+    private var currencies = emptyMap<String, Currency>()
+    private var allUsersData = emptyMap<String, Map.Entry<CardholderData, List<TransactionData>>>()
 
-    private var cardHolders = emptyList<CardholderInfo>()
     private val _selectedUserCard = MutableStateFlow<CardholderData?>(null)
     val selectedUserCard: StateFlow<CardholderData?>
         get() = _selectedUserCard
 
-    private val _transactions = MutableStateFlow(listOf<TransactionData>())
-    val transactions: StateFlow<List<TransactionData>>
-        get() = _transactions
+    private val _userTransactions = MutableStateFlow(listOf<TransactionData>())
+    val userTransactions: StateFlow<List<TransactionData>>
+        get() = _userTransactions
 
     private val eventChannel = Channel<UiEvent>()
     val events = eventChannel.consumeAsFlow()
 
-    fun refreshData(){
-        viewModelScope.launch {
-            val currencies = getCurrencyRates()
-        }
-    }
+    private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
+    private val uiState: StateFlow<UiState>
+        get() = _uiState
 
-    fun refreshCurrencies() {
-        viewModelScope.launch {
-            when (val result = getCurrencyRates()) {
-                is State.Success -> _currencies.value = result.data
-                is State.Error -> eventChannel.send(UiEvent.ShowSnackbar(msgId = result.msgId))
+    fun refreshData() = viewModelScope.launch {
+        _uiState.value = UiState.Loading
+        val dataResult = getData()
+
+        dataResult.fold(
+            onSuccess = {
+                handleSuccessData(it.first, it.second)
+            },
+            onFailure = {
+                handleFailure(it)
             }
-        }
+        )
     }
 
-    fun refreshCardHoldersInfo() {
+
+    private fun handleSuccessData(
+        usersData: Map<CardholderData, List<TransactionData>>,
+        newCurrencies: Map<String, Currency>
+    ) {
+        currencies = newCurrencies
+        handleNewUsersData(usersData)
+    }
+
+    private fun handleFailure(
+        e: Throwable
+    ) {
+        _uiState.value = UiState.Idle
+    }
+
+
+    fun setNewCurrency(newCurrencyCode: String) {
         viewModelScope.launch {
-            when (val result = getCardHolderInfo()) {
-                is State.Success -> cardHolders = result.data
-                is State.Error -> eventChannel.send(UiEvent.ShowSnackbar(msgId = result.msgId))
-            }
+            val newUsersData = changeCurrency(newCurrencyCode, allUsersData, currencies)
+            handleNewUsersData(newUsersData)
         }
     }
 
-    fun changeCurrency(newCurrency: Currency) {
-        val currentCardHolder = _selectedUserCard.value ?: return
-        val (newCardData,newTransactions) = convertUserCurrencyUseCase(newCurrency,currentCardHolder,_transactions.value)
+    private fun handleNewUsersData(usersData: Map<CardholderData, List<TransactionData>>) {
+        allUsersData = usersData.mapWithCardNumber()
+        val selectedCardNumber = _selectedUserCard.value?.cardNumber ?: return
+        val selectedUserData = allUsersData[selectedCardNumber]
+        _selectedUserCard.value = selectedUserData?.key
+        _userTransactions.value = selectedUserData?.value ?: emptyList()
     }
 
+    private fun Map<CardholderData, List<TransactionData>>.mapWithCardNumber() =
+        this.entries.associateBy { data -> data.key.cardNumber }
 
+
+    companion object {
+        const val NULL_CARD = "0000 0000 0000 0000"
+    }
 }
