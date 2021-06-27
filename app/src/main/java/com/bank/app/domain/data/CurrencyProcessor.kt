@@ -1,13 +1,14 @@
 package com.bank.app.domain.data
 
 import com.bank.app.data.entities.Currency
+import com.bank.app.presentation.utils.AppConfig
 
 class CurrencyProcessor {
 
     fun recountCurrency(
         recountKey: String,
         nominal: Double,
-        baseCurrencyKey: String = BASE_VALUE,
+        baseCurrencyKey: String = AppConfig.BASE_CURRENCY,
         currencies: Map<String, Currency>
     ): Double {
         val baseValue = currencies[baseCurrencyKey] ?: return 0.0
@@ -25,7 +26,6 @@ class CurrencyProcessor {
     }
 
     companion object {
-        private const val BASE_VALUE = "USD"
         private const val API_BASE_VALUE = "RUB"
     }
 }

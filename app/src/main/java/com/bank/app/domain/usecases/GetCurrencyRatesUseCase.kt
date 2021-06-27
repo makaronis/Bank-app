@@ -2,6 +2,7 @@ package com.bank.app.domain.usecases
 
 import android.util.Log
 import com.bank.app.data.entities.Currency
+import com.bank.app.di.IoDispatcher
 import com.bank.app.domain.repository.CurrencyRatesRepo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -9,7 +10,7 @@ import javax.inject.Inject
 
 class GetCurrencyRatesUseCase @Inject constructor(
     private val repo: CurrencyRatesRepo,
-    private val ioDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
 
     suspend operator fun invoke(): Result<Map<String, Currency>> {

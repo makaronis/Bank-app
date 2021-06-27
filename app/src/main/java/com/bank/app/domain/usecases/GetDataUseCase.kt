@@ -4,6 +4,8 @@ import android.util.Log
 import com.bank.app.data.entities.CardholderData
 import com.bank.app.data.entities.Currency
 import com.bank.app.data.entities.TransactionData
+import com.bank.app.di.IoDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
@@ -12,10 +14,12 @@ class GetDataUseCase @Inject constructor(
     private val getCardHolderInfo: GetCardHolderInfoUseCase,
     private val getCurrencyRates: GetCurrencyRatesUseCase,
     private val convertUserCurrency: ConvertUserCurrencyUseCase,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
 
     suspend operator fun invoke(): Result<Pair<Map<CardholderData, List<TransactionData>>, Map<String, Currency>>> {
-        return coroutineScope {
+        return coroutineScope() {
+
             val cardHolderInfo = async { getCardHolderInfo() }
             val currencyRates = async { getCurrencyRates() }
 

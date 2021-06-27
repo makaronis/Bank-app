@@ -7,9 +7,11 @@ import com.bank.app.data.db.AppSharedPref
 import com.bank.app.data.entities.*
 import com.bank.app.domain.usecases.*
 import com.bank.app.presentation.utils.AppConfig
+import com.bank.bank_app.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,7 +36,6 @@ class HomeViewModel @Inject constructor(
     private val _uiEvents = MutableSharedFlow<UiEvent>()
     val uiEvents: SharedFlow<UiEvent>
         get() = _uiEvents
-
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
     val uiState: StateFlow<UiState>
@@ -63,10 +64,18 @@ class HomeViewModel @Inject constructor(
     val operatedCurrencies: StateFlow<List<CurrencyItem>>
         get() = _operatedCurrencies
 
+    var updateOnAvailable = false
 
     init {
         setLastSelectedCurrency()
         refreshData()
+    }
+
+    fun updateOnAvailable() {
+        if (updateOnAvailable) {
+            updateOnAvailable = false
+            refreshData()
+        }
     }
 
     fun refreshData() = viewModelScope.launch {
@@ -96,9 +105,12 @@ class HomeViewModel @Inject constructor(
     private fun handleFailure(
         e: Throwable
     ) {
+        when (e) {
+            is UnknownHostException -> _uiState.value = UiState.Error(R.string.error_no_internet)
+            else -> _uiState.value = UiState.Error(R.string.error_unknown)
+        }
         Log.d("HomeViewModel", "onFailure")
         Log.e("HomeViewModel", e.message, e)
-        _uiState.value = UiState.Idle
     }
 
 

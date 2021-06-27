@@ -2,6 +2,7 @@ package com.bank.app.domain.usecases
 
 import com.bank.app.data.db.AppSharedPref
 import com.bank.app.data.entities.*
+import com.bank.app.di.IoDispatcher
 import com.bank.app.domain.data.CurrencyProcessor
 import com.bank.app.presentation.utils.round
 import kotlinx.coroutines.CoroutineDispatcher
@@ -11,7 +12,7 @@ import javax.inject.Inject
 class ConvertUserCurrencyUseCase @Inject constructor(
     private val sharedPref: AppSharedPref,
     private val currencyProcessor: CurrencyProcessor,
-    private val ioDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
     suspend operator fun invoke(
         cardholdersInfo: List<CardholderInfo>,

@@ -1,7 +1,15 @@
 package com.bank.app.presentation
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -10,7 +18,9 @@ import com.bank.app.data.entities.CurrencyItem
 import com.bank.app.data.entities.UiState
 import com.bank.app.presentation.adapters.CurrencyAdapter
 import com.bank.app.presentation.adapters.TransactionAdapter
+import com.bank.app.presentation.utils.AppConfig
 import com.bank.app.presentation.utils.ImageUtils
+import com.bank.app.presentation.utils.Utils
 import com.bank.app.presentation.utils.observeOnLifecycle
 import com.bank.bank_app.R
 import com.bank.bank_app.databinding.FragmentHomeBinding
@@ -25,10 +35,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val transAdapter = TransactionAdapter()
 
     private var currencyAdapter: CurrencyAdapter? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,19 +51,27 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             rvCurrency.adapter = currencyAdapter
             rvCurrency.itemAnimator = null
 
+            swipeToRefresh.setOnRefreshListener {
+                viewModel.refreshData()
+            }
+
             userCard.setOnClickListener {
                 navigateToCards()
             }
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun subscribeObservers() {
         viewModel.apply {
             uiState.observeOnLifecycle(viewLifecycleOwner) {
                 when (it) {
                     UiState.Loading -> startShimmer()
-                    UiState.Idle -> stopShimmer()
-                    is UiState.Error -> handleError()
+                    UiState.Idle -> {
+                        fragmentBinding.swipeToRefresh.isRefreshing = false
+                        stopShimmer()
+                    }
+                    is UiState.Error -> handleError(it.msgId)
                 }
             }
 
@@ -65,8 +79,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 if (it == null) return@observeOnLifecycle
                 fragmentBinding.apply {
                     tvCardNumber.text = it.cardNumber
-                    tvConvertedBalance.text = it.convertedBalance.toString()
-                    tvBalance.text = it.balance.toString()
+                    tvConvertedBalance.text =
+                        "${Utils.getSymbolByCode(it.convertedCode)}${it.convertedBalance}"
+                    tvBalance.text =
+                        "${Utils.getSymbolByCode(AppConfig.BASE_CURRENCY)}${it.balance}"
                     tvUserName.text = it.cardholderName
                     tvValidDate.text = it.valid
                     ivCardType.setImageDrawable(
@@ -75,6 +91,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                             requireContext()
                         )
                     )
+
                 }
             }
 
@@ -88,35 +105,46 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
-    private fun handleError() {
+    private fun handleError(msgId: Int) {
+        fragmentBinding.apply {
+            ltContent.visibility = View.GONE
+            tvError.visibility = View.VISIBLE
+            tvError.text = getString(msgId)
+        }
+    }
 
+    private fun hideError() {
+        fragmentBinding.apply {
+            ltContent.visibility = View.VISIBLE
+            tvError.visibility = View.GONE
+        }
     }
 
     private fun startShimmer() = fragmentBinding.apply {
+        hideError()
         cardPlaceholder.visibility = View.VISIBLE
         transactionsPlaceholder.visibility = View.VISIBLE
         userCard.visibility = View.INVISIBLE
         cvTransactions.visibility = View.INVISIBLE
+        rvCurrency.visibility = View.INVISIBLE
         cardPlaceholder.startShimmer()
         transactionsPlaceholder.startShimmer()
+        currenciesPlaceholder.startShimmer()
     }
 
     private fun stopShimmer() = fragmentBinding.apply {
         cardPlaceholder.stopShimmer()
         transactionsPlaceholder.stopShimmer()
+        currenciesPlaceholder.stopShimmer()
         cardPlaceholder.visibility = View.GONE
         transactionsPlaceholder.visibility = View.GONE
+        currenciesPlaceholder.visibility = View.GONE
         userCard.visibility = View.VISIBLE
         cvTransactions.visibility = View.VISIBLE
+        rvCurrency.visibility = View.VISIBLE
     }
 
     private fun navigateToCards() {
         findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCardsFragment())
-    }
-
-    companion object {
-        private const val GBP_CODE = "GBP"
-        private const val EUR_CODE = "EUR"
-        private const val RUB_CODE = "RUB"
     }
 }

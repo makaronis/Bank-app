@@ -16,6 +16,7 @@
         </item>
         <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Bank.MediumComponent
         </item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>
 
     <style name="ShapeAppearance.Bank.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">

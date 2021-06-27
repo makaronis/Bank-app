@@ -58,8 +58,13 @@ object AppProvideModule {
     fun provideCurrencyService(@CurrencyRetrofit retrofit: Retrofit): CurrencyService =
         retrofit.create(CurrencyService::class.java)
 
+    @IoDispatcher
     @Provides
-    fun provideDispatcher() = Dispatchers.IO
+    fun provideIoDispatcher() = Dispatchers.IO
+
+    @DefaultDispatcher
+    @Provides
+    fun provideDefaultDispatcher() = Dispatchers.Default
 
     @Provides
     fun provideCurrencyProcessor() = CurrencyProcessor()
@@ -85,3 +90,11 @@ annotation class CurrencyRetrofit
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class TransactionsRetrofit
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class DefaultDispatcher
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class IoDispatcher
