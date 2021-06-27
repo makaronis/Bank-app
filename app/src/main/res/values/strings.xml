@@ -9,4 +9,9 @@
     <string name="rub" translatable="false">RUB</string>
 
     <string name="error_no_internet">No internet access,please check your connection.</string>
+    <string name="my_cards">My cards</string>
+    <string name="balance">Your balance</string>
+    <string name="valid_thru">VALID THRU</string>
+    <string name="change_currency">Change currency</string>
+    <string name="history">History</string>
 </resources>

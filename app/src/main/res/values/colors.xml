@@ -13,5 +13,6 @@
     <color name="surfaceWhite">#F1F3F9</color>
     <color name="shimmerBackground">#dddddd</color>
     <color name="transactionStroke">#eaeef9</color>
-    <color name="selectedCard">#0083E1</color>
+    <color name="primary">#0083E1</color>
+    <color name="divider">#F1F3F9</color>
 </resources>

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">bank-app</string>
-    <string name="main">Главная</string>
-    <string name="error_no_internet">Нет доступа в Интернет, пожалуйста, проверьте ваше соединение.</string>
-</resources>

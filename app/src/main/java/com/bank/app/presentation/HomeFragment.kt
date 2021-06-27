@@ -2,20 +2,19 @@ package com.bank.app.presentation
 
 import android.os.Bundle
 import android.view.View
-import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.bank.app.data.entities.CurrencyItem
 import com.bank.app.data.entities.UiState
+import com.bank.app.presentation.adapters.CurrencyAdapter
 import com.bank.app.presentation.adapters.TransactionAdapter
 import com.bank.app.presentation.utils.ImageUtils
 import com.bank.app.presentation.utils.observeOnLifecycle
 import com.bank.bank_app.R
 import com.bank.bank_app.databinding.FragmentHomeBinding
 import com.google.android.material.card.MaterialCardView
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
@@ -23,7 +22,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private val viewModel: HomeViewModel by activityViewModels()
 
-    private val adapter = TransactionAdapter()
+    private val transAdapter = TransactionAdapter()
+
+    private var currencyAdapter: CurrencyAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,16 +38,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun subscribeUi() {
         fragmentBinding.apply {
-            rvTransactions.adapter = adapter
+            rvTransactions.adapter = transAdapter
 
-            cardGbp.setOnClickListener {
-                onCurrencyCardClick(it as MaterialCardView, GBP_CODE)
-            }
-            cardEur.setOnClickListener {
-                onCurrencyCardClick(it as MaterialCardView, EUR_CODE)
-            }
-            cardRub.setOnClickListener {
-                onCurrencyCardClick(it as MaterialCardView, RUB_CODE)
+            currencyAdapter = CurrencyAdapter(viewModel::setNewCurrency)
+            rvCurrency.adapter = currencyAdapter
+            rvCurrency.itemAnimator = null
+
+            userCard.setOnClickListener {
+                navigateToCards()
             }
         }
     }
@@ -79,13 +78,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
 
             userTransactions.observeOnLifecycle(viewLifecycleOwner) {
-                adapter.submitList(it)
+                transAdapter.submitList(it)
+            }
+
+            operatedCurrencies.observeOnLifecycle(viewLifecycleOwner) {
+                currencyAdapter?.submitList(it)
             }
         }
-    }
-
-    private fun onCurrencyCardClick(card: MaterialCardView, currencyCode: String) {
-
     }
 
     private fun handleError() {
@@ -108,6 +107,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         transactionsPlaceholder.visibility = View.GONE
         userCard.visibility = View.VISIBLE
         cvTransactions.visibility = View.VISIBLE
+    }
+
+    private fun navigateToCards() {
+        findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCardsFragment())
     }
 
     companion object {

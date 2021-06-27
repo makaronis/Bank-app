@@ -7,5 +7,17 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.bank.app.presentation.HomeFragment"
-        android:label="HomeFragment" />
+        android:label="HomeFragment" >
+        <action
+            android:id="@+id/action_homeFragment_to_cardsFragment"
+            app:destination="@id/cardsFragment"
+            app:enterAnim="@anim/fragment_slide_in_from_right"
+            app:exitAnim="@anim/fragment_slide_out_to_left"
+            app:popEnterAnim="@anim/fragment_slide_in_from_left"
+            app:popExitAnim="@anim/fragment_slide_out_to_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/cardsFragment"
+        android:name="com.bank.app.presentation.CardsFragment"
+        android:label="CardsFragment" />
 </navigation>

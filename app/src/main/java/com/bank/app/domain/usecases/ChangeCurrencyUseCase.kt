@@ -3,10 +3,10 @@ package com.bank.app.domain.usecases
 import com.bank.app.data.db.AppSharedPref
 import com.bank.app.data.entities.*
 import com.bank.app.domain.data.CurrencyProcessor
+import com.bank.app.presentation.utils.round
 import javax.inject.Inject
 
 class ChangeCurrencyUseCase @Inject constructor(
-    private val convertUserCurrency: ConvertUserCurrencyUseCase,
     private val currencyProcessor: CurrencyProcessor,
     private val sharedPref: AppSharedPref,
 ) {
@@ -25,7 +25,7 @@ class ChangeCurrencyUseCase @Inject constructor(
                     recountKey = newCurrencyCode,
                     nominal = entry.key.balance,
                     currencies = currencies,
-                )
+                ).round(2)
             )
             val convertedTransactions = entry.value.map {
                 it.copy(
@@ -33,7 +33,7 @@ class ChangeCurrencyUseCase @Inject constructor(
                         recountKey = newCurrencyCode,
                         nominal = it.amount,
                         currencies = currencies,
-                    )
+                    ).round(2)
                 )
             }
             convertedMap[convertedCardholderInfo] = convertedTransactions

@@ -3,14 +3,12 @@ package com.bank.app.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bank.app.data.db.AppSharedPref
 import com.bank.app.data.entities.*
 import com.bank.app.domain.usecases.*
+import com.bank.app.presentation.utils.AppConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,9 +16,9 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getData: GetDataUseCase,
     private val changeCurrency: ChangeCurrencyUseCase,
-    private val getCardHolders: GetCardHolderInfoUseCase,
+    private val changeUser: ChangeUserUseCase,
+    private val appSharedPref: AppSharedPref,
 ) : ViewModel() {
-
 
     private var currencies = emptyMap<String, Currency>()
     private var allUsersData = emptyMap<String, Map.Entry<CardholderData, List<TransactionData>>>()
@@ -33,14 +31,41 @@ class HomeViewModel @Inject constructor(
     val userTransactions: StateFlow<List<TransactionData>>
         get() = _userTransactions
 
-    private val eventChannel = Channel<UiEvent>()
-    val events = eventChannel.consumeAsFlow()
+    private val _uiEvents = MutableSharedFlow<UiEvent>()
+    val uiEvents: SharedFlow<UiEvent>
+        get() = _uiEvents
+
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
     val uiState: StateFlow<UiState>
         get() = _uiState
 
+    private val _userCards = MutableStateFlow<List<CardholderData>>(emptyList())
+    val userCards: StateFlow<List<CardholderData>>
+        get() = _userCards
+
+    private val _operatedCurrencies = MutableStateFlow(
+        listOf(
+            CurrencyItem(
+                currencyCode = AppConfig.GBP_CURRENCY_CODE,
+                currencySymbol = "£",
+            ),
+            CurrencyItem(
+                currencyCode = AppConfig.EUR_CURRENCY_CODE,
+                currencySymbol = "€",
+            ),
+            CurrencyItem(
+                currencyCode = AppConfig.RUB_CURRENCY_CODE,
+                currencySymbol = "₽"
+            ),
+        )
+    )
+    val operatedCurrencies: StateFlow<List<CurrencyItem>>
+        get() = _operatedCurrencies
+
+
     init {
+        setLastSelectedCurrency()
         refreshData()
     }
 
@@ -57,7 +82,6 @@ class HomeViewModel @Inject constructor(
             }
         )
     }
-
 
     private fun handleSuccessData(
         usersData: Map<CardholderData, List<TransactionData>>,
@@ -82,11 +106,26 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val newUsersData = changeCurrency(newCurrencyCode, allUsersData, currencies)
             handleNewUsersData(newUsersData)
+            updateOperatedCurrencies(newCurrencyCode)
         }
+    }
+
+    fun changeUserCard(cardNumber: String) {
+        viewModelScope.launch {
+            changeUser(cardNumber)
+            updateSelectedUser(cardNumber)
+            _uiEvents.emit(UiEvent.NavigateBack)
+        }
+    }
+
+    private fun updateSelectedUser(cardNumber: String) {
+        _selectedUserCard.value = allUsersData[cardNumber]?.key
+        _userTransactions.value = allUsersData[cardNumber]?.value ?: emptyList()
     }
 
     private fun handleNewUsersData(usersData: Map<CardholderData, List<TransactionData>>) {
         allUsersData = usersData.mapWithCardNumber()
+        _userCards.value = usersData.map { it.key }
         var selectedCardNumber = _selectedUserCard.value?.cardNumber
         if (selectedCardNumber == null) {
             selectedCardNumber = allUsersData.keys.firstOrNull()
@@ -94,6 +133,19 @@ class HomeViewModel @Inject constructor(
         val selectedUserData = allUsersData[selectedCardNumber]
         _selectedUserCard.value = selectedUserData?.key
         _userTransactions.value = selectedUserData?.value ?: emptyList()
+    }
+
+    private fun setLastSelectedCurrency() {
+        updateOperatedCurrencies(appSharedPref.getLastCurrencyCode())
+    }
+
+    private fun updateOperatedCurrencies(newCurrencyCode: String) {
+        val selectedCurrency = _operatedCurrencies.value.map {
+            it.copy(
+                isSelected = it.currencyCode == newCurrencyCode
+            )
+        }
+        _operatedCurrencies.value = selectedCurrency
     }
 
     private fun Map<CardholderData, List<TransactionData>>.mapWithCardNumber() =

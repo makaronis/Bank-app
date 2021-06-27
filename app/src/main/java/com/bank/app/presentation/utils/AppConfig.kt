@@ -5,4 +5,8 @@ object AppConfig {
     const val TRANSACTION_URL = "https://hr.peterpartner.net/"
 
     const val DEFAULT_CURRENCY = "GBP"
+
+    const val GBP_CURRENCY_CODE = "GBP"
+    const val EUR_CURRENCY_CODE = "EUR"
+    const val RUB_CURRENCY_CODE = "RUB"
 }
