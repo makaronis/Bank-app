@@ -7,9 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="statusBar">#F1F3F9</color>
     <color name="primaryText">#141414</color>
     <color name="secondaryText">#8C9AAE</color>
     <color name="surfaceWhite">#F1F3F9</color>
     <color name="shimmerBackground">#dddddd</color>
-    <color name="transactionStrokeColor">#eaeef9</color>
+    <color name="transactionStroke">#eaeef9</color>
+    <color name="selectedCard">#0083E1</color>
 </resources>

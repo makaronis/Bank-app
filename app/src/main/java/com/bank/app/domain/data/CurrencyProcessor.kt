@@ -3,9 +3,7 @@ package com.bank.app.domain.data
 import com.bank.app.data.entities.Currency
 import kotlinx.serialization.descriptors.PrimitiveKind
 
-object CurrencyProcessor {
-
-    private const val BASE_VALUE = "USD"
+class CurrencyProcessor {
 
     fun recountCurrency(
         recountKey: String,
@@ -16,5 +14,9 @@ object CurrencyProcessor {
         val baseValue = currencies[baseCurrencyKey] ?: return 0.0
         val recountValue = currencies[recountKey] ?: return 0.0
         return recountValue.value * nominal / baseValue.value
+    }
+
+    companion object {
+        private const val BASE_VALUE = "USD"
     }
 }

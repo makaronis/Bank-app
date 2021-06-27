@@ -16,7 +16,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:strokeColor="@color/transactionStrokeColor"
+        app:strokeColor="@color/transactionStroke"
         app:strokeWidth="1dp">
 
         <ImageView

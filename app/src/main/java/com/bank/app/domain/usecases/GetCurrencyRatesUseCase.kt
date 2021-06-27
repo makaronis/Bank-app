@@ -1,5 +1,6 @@
 package com.bank.app.domain.usecases
 
+import android.util.Log
 import com.bank.app.data.entities.Currency
 import com.bank.app.domain.repository.CurrencyRatesRepo
 import kotlinx.coroutines.CoroutineDispatcher
@@ -16,6 +17,7 @@ class GetCurrencyRatesUseCase @Inject constructor(
             val response = withContext(ioDispatcher) { repo.getCurrencies() }
             Result.success(response)
         } catch (e: Exception) {
+            Log.e("GetCurrencyRatesUseCase", e.message, e)
             Result.failure(e)
         }
     }

@@ -1,9 +1,11 @@
 package com.bank.app.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bank.app.data.entities.*
 import com.bank.app.domain.usecases.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,11 +14,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class HomeViewModel @Inject constructor(
-    val getData: GetDataUseCase,
-    val changeCurrency: ChangeCurrencyUseCase,
-    val getCardHolders: GetCardHolderInfoUseCase,
+    private val getData: GetDataUseCase,
+    private val changeCurrency: ChangeCurrencyUseCase,
+    private val getCardHolders: GetCardHolderInfoUseCase,
 ) : ViewModel() {
+
 
     private var currencies = emptyMap<String, Currency>()
     private var allUsersData = emptyMap<String, Map.Entry<CardholderData, List<TransactionData>>>()
@@ -33,8 +37,12 @@ class HomeViewModel @Inject constructor(
     val events = eventChannel.consumeAsFlow()
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
-    private val uiState: StateFlow<UiState>
+    val uiState: StateFlow<UiState>
         get() = _uiState
+
+    init {
+        refreshData()
+    }
 
     fun refreshData() = viewModelScope.launch {
         _uiState.value = UiState.Loading
@@ -55,13 +63,17 @@ class HomeViewModel @Inject constructor(
         usersData: Map<CardholderData, List<TransactionData>>,
         newCurrencies: Map<String, Currency>
     ) {
+        Log.d("HomeViewModel", "onSuccess")
         currencies = newCurrencies
         handleNewUsersData(usersData)
+        _uiState.value = UiState.Idle
     }
 
     private fun handleFailure(
         e: Throwable
     ) {
+        Log.d("HomeViewModel", "onFailure")
+        Log.e("HomeViewModel", e.message, e)
         _uiState.value = UiState.Idle
     }
 
@@ -75,7 +87,10 @@ class HomeViewModel @Inject constructor(
 
     private fun handleNewUsersData(usersData: Map<CardholderData, List<TransactionData>>) {
         allUsersData = usersData.mapWithCardNumber()
-        val selectedCardNumber = _selectedUserCard.value?.cardNumber ?: return
+        var selectedCardNumber = _selectedUserCard.value?.cardNumber
+        if (selectedCardNumber == null) {
+            selectedCardNumber = allUsersData.keys.firstOrNull()
+        }
         val selectedUserData = allUsersData[selectedCardNumber]
         _selectedUserCard.value = selectedUserData?.key
         _userTransactions.value = selectedUserData?.value ?: emptyList()
@@ -83,7 +98,6 @@ class HomeViewModel @Inject constructor(
 
     private fun Map<CardholderData, List<TransactionData>>.mapWithCardNumber() =
         this.entries.associateBy { data -> data.key.cardNumber }
-
 
     companion object {
         const val NULL_CARD = "0000 0000 0000 0000"

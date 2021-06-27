@@ -45,7 +45,7 @@
 
 
         <com.facebook.shimmer.ShimmerFrameLayout
-            android:id="@+id/cardPLaceholder"
+            android:id="@+id/cardPlaceholder"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="14dp"
@@ -154,7 +154,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
                 <TextView
-                    android:id="@+id/tvCurrencyBalance"
+                    android:id="@+id/tvConvertedBalance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="22dp"
@@ -177,7 +177,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
 
                 <TextView
-                    android:id="@+id/textView8"
+                    android:id="@+id/tvBalance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
