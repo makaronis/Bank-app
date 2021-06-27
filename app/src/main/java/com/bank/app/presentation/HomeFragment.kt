@@ -39,6 +39,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private fun subscribeUi() {
         fragmentBinding.apply {
             rvTransactions.adapter = transAdapter
+            rvTransactions.itemAnimator = null
 
             currencyAdapter = CurrencyAdapter(viewModel::setNewCurrency)
             rvCurrency.adapter = currencyAdapter

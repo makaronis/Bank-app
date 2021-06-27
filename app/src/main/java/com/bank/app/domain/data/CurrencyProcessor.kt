@@ -1,7 +1,6 @@
 package com.bank.app.domain.data
 
 import com.bank.app.data.entities.Currency
-import kotlinx.serialization.descriptors.PrimitiveKind
 
 class CurrencyProcessor {
 
@@ -12,11 +11,21 @@ class CurrencyProcessor {
         currencies: Map<String, Currency>
     ): Double {
         val baseValue = currencies[baseCurrencyKey] ?: return 0.0
-        val recountValue = currencies[recountKey] ?: return 0.0
-        return recountValue.value * nominal / baseValue.value
+        val recountValue = if (recountKey == API_BASE_VALUE) {
+            return calculateInBaseApiCurrency(nominal, baseValue)
+        } else {
+            currencies[recountKey] ?: return 0.0
+        }
+        val convertedInRub = baseValue.value * nominal
+        return convertedInRub / recountValue.value
+    }
+
+    private fun calculateInBaseApiCurrency(nominal: Double, baseCurrency: Currency): Double {
+        return nominal * baseCurrency.value
     }
 
     companion object {
         private const val BASE_VALUE = "USD"
+        private const val API_BASE_VALUE = "RUB"
     }
 }
