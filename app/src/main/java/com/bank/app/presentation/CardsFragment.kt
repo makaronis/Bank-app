@@ -20,7 +20,6 @@ class CardsFragment : Fragment(R.layout.fragment_cards) {
 
     private var adapter: CardAdapter? = null
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         subscribeToolbar()

@@ -19,10 +19,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: HomeViewModel by viewModels()
-
-    private var connectivityCallback: ConnectivityManager.NetworkCallback? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(com.bank.bank_app.R.layout.activity_main)
@@ -40,63 +36,6 @@ class MainActivity : AppCompatActivity() {
                 this,
                 com.bank.bank_app.R.color.darkStatusBar
             )
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            registerConnectivityManager()
-//        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            unregisterConnectivityManager()
-//        }
-    }
-
-
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun registerConnectivityManager() {
-        val connectivityManager =
-            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val connectivityCallback = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                //take action when network connection is gained
-                Log.d("TAG", "onAvailable")
-                viewModel.updateOnAvailable()
-            }
-
-            override fun onUnavailable() {
-                super.onUnavailable()
-                Log.d("TAG", "onUnavailable")
-                viewModel.updateOnAvailable = true
-            }
-
-            override fun onLost(network: Network) {
-                super.onLost(network)
-                Log.d("TAG", "onLost")
-            }
-
-            override fun onCapabilitiesChanged(
-                network: Network,
-                networkCapabilities: NetworkCapabilities
-            ) {
-                super.onCapabilitiesChanged(network, networkCapabilities)
-                Log.d("TAG", "onCapabilitiesChanged")
-            }
-        }
-        connectivityManager.registerDefaultNetworkCallback(connectivityCallback)
-        this.connectivityCallback = connectivityCallback
-    }
-
-    private fun unregisterConnectivityManager() {
-        val connectivityManager =
-            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        connectivityCallback?.let {
-            connectivityManager.unregisterNetworkCallback(it)
         }
     }
 }

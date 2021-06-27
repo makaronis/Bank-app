@@ -18,7 +18,6 @@ class GetCardHolderInfoUseCase @Inject constructor(
             val result = withContext(ioDispatcher) { repo.getCardHoldersInfo() }
             Result.success(result)
         } catch (e: Exception) {
-            Log.e("GetCardHolderInfo", e.message, e)
             Result.failure(e)
         }
     }

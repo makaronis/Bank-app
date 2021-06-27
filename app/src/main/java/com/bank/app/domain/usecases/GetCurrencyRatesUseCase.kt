@@ -18,7 +18,6 @@ class GetCurrencyRatesUseCase @Inject constructor(
             val response = withContext(ioDispatcher) { repo.getCurrencies() }
             Result.success(response)
         } catch (e: Exception) {
-            Log.e("GetCurrencyRatesUseCase", e.message, e)
             Result.failure(e)
         }
     }

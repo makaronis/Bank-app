@@ -96,7 +96,6 @@ class HomeViewModel @Inject constructor(
         usersData: Map<CardholderData, List<TransactionData>>,
         newCurrencies: Map<String, Currency>
     ) {
-        Log.d("HomeViewModel", "onSuccess")
         currencies = newCurrencies
         handleNewUsersData(usersData)
         _uiState.value = UiState.Idle
@@ -109,8 +108,6 @@ class HomeViewModel @Inject constructor(
             is UnknownHostException -> _uiState.value = UiState.Error(R.string.error_no_internet)
             else -> _uiState.value = UiState.Error(R.string.error_unknown)
         }
-        Log.d("HomeViewModel", "onFailure")
-        Log.e("HomeViewModel", e.message, e)
     }
 
 
@@ -163,7 +160,4 @@ class HomeViewModel @Inject constructor(
     private fun Map<CardholderData, List<TransactionData>>.mapWithCardNumber() =
         this.entries.associateBy { data -> data.key.cardNumber }
 
-    companion object {
-        const val NULL_CARD = "0000 0000 0000 0000"
-    }
 }
